@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Tracking</title>
+    <!-- here goes the folium styles -->
+    {{ map_html|safe }}
+</head>
+<body>
+<script>
+  // fin leaflet map object
+  let map;
+  for (const key in window) {
+    if (key.startsWith("map_") && window[key] instanceof L.Map) {
+      map = window[key];
+      break;
+    }
+  }
+  if (!map) alert("Map not found!");
+
+  // Marker pool
+  let markers = {};
+
+  async function updateMarkers()
+  {
+    const response = await fetch('/positions');
+    const data = await response.json();
+
+    for (const [id, coords] of Object.entries(data))
+    {
+      const [lat, lon] = coords;
+      if (!markers[id]) {
+        markers[id] = L.marker([lat, lon]).addTo(map).bindPopup(`Team: ${id}`);
+      } else {
+        markers[id].setLatLng([lat, lon]);
+      }
+    }
+  }
+
+  setInterval(updateMarkers, 3000); // update every 3 seconds
+</script>
+</body>
+</html>
