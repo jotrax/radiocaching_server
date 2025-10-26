@@ -46,7 +46,7 @@ def handle_connect(client, userdata, flags, rc):
 def handle_mqtt_message(client, userdata, message):
     try:
         topic_parts = message.topic.split('/')
-        vid = topic_parts[1]
+        vid = topic_parts[3]
 
         # parse from json
         data = json.loads(message.payload.decode())
